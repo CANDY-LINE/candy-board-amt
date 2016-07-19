@@ -18,7 +18,7 @@ setup(
     author_email='baba.daisuke@gmail.com',
     url='http://github.com/CANDY-LINE/candy-board-amt',
     download_url='https://github.com/CANDY-LINE/candy-board-amt/tarball/{0}'.format(version),
-    description='Base CANDY Board Service',
+    description='Base CANDY LINE boards service for AM Telecom Modules',
     long_description=open('README.md').read() + '\n\n' + open('LICENSE').read(),
     packages=find_packages('lib'),
     package_dir={'': 'lib'},
