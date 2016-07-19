@@ -37,4 +37,9 @@ setup(
     keywords=(
         'CANDY EGG', 'CANDY LINE'
     ),
+    tests_require=['pytest-cov>=2.2.0',
+                   'pytest>=2.8.2',
+                   'terminaltables>=1.2.1',
+                   'colorclass==2.0.0',
+                   'matplotlib>=1.4.3']
 )
