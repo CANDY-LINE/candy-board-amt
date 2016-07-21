@@ -30,6 +30,11 @@ $ cat files.txt | xargs rm -rf
 ```
 
 # Revision history
+* 0.1.0
+   - Remove modem_auto_connect()
+   - Add a new function to enable ACM, modem_enable_acm()
+   - Add a new function delete APN, apn_del()
+   - Add a new static function to resolve modem serial port
 
  * 0.0.1
     - Initial beta release
