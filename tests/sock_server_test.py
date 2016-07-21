@@ -29,6 +29,10 @@ def test_apn_set(setup_sock_server):
     ret = setup_sock_server.perform({'category':'apn', 'action':'set', 'name':'apn', 'user_id':'user', 'password':'password'})
     assert ret == '{"status": "OK", "result": ""}'
 
+def test_apn_del(setup_sock_server):
+    ret = setup_sock_server.perform({'category':'apn', 'action':'del', 'apn_id':'1'})
+    assert ret == '{"status": "OK", "result": ""}'
+
 def test_apn_set_nok(setup_sock_server):
     ret = setup_sock_server.perform({'category':'apn', 'action':'set'})
     assert ret == '{"status": "ERROR", "result": "Invalid Args"}'
