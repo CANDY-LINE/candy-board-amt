@@ -215,16 +215,18 @@ class SockServer(threading.Thread):
         status, result = self.send_at("AT+CGDCONT?")
         apn_list = []
         if status == "OK":
-            name_list = map(lambda e: e[10:].split(",")[2].translate(None, '"'), result.split("\n"))
+            id_name_list = map(lambda e: e[10:].split(",")[0] + "," + e[10:].split(",")[2].translate(None, '"'), result.split("\n"))
             status, result = self.send_at("AT$QCPDPP?")
             creds_list = []
             if status == "OK":
                 creds_list = map(lambda e: e[2].translate(None, '"'),
                     filter(lambda e: len(e) > 2,
                         map(lambda e: e[9:].split(","), result.split("\n"))))
-            for i in range(len(name_list)):
+            for i in range(len(id_name_list)):
+                id_name = id_name_list[i].split(",")
                 apn = {
-                    'apn': name_list[i]
+                    'apn_id': id_name[0],
+                    'apn': id_name[1]
                 }
                 if i < len(creds_list):
                     apn['user'] = creds_list[i]
@@ -239,9 +241,23 @@ class SockServer(threading.Thread):
 
     def apn_set(self, cmd):
         (name, user_id, password) = (cmd['name'], cmd['user_id'], cmd['password'])
-        status, result = self.send_at("AT+CGDCONT=1,\"IPV4V6\",\"%s\",\"0.0.0.0\",0,0" % name)
+        apn_id = "1"
+        if 'apn_id' in cmd:
+            apn_id = cmd['apn_id']
+        status, result = self.send_at("AT+CGDCONT=%s,\"IPV4V6\",\"%s\",\"0.0.0.0\",0,0" % (apn_id, name))
         if status == "OK":
-            status, result = self.send_at("AT$QCPDPP=1,3,\"%s\",\"%s\"" % (password, user_id))
+            status, result = self.send_at("AT$QCPDPP=%s,3,\"%s\",\"%s\"" % (apn_id, password, user_id))
+        message = {
+            'status': status,
+            'result': result
+        }
+        return json.dumps(message)
+
+    def apn_del(self, cmd):
+        apn_id = "1"
+        if 'apn_id' in cmd:
+            apn_id = cmd['apn_id']
+        status, result = self.send_at("AT+CGDCONT=%s" % apn_id) # removes QCPDPP as well
         message = {
             'status': status,
             'result': result

@@ -23,7 +23,7 @@ def test_perform_nok2(setup_sock_server):
 
 def test_apn_ls(setup_sock_server):
     ret = setup_sock_server.perform({'category':'apn', 'action':'ls'})
-    assert ret == '{"status": "OK", "result": {"apns": [{"apn": "access_point_name", "user": "user_id"}]}}'
+    assert ret == '{"status": "OK", "result": {"apns": [{"apn": "access_point_name", "user": "user_id", "apn_id": "1"}]}}'
 
 def test_apn_set(setup_sock_server):
     ret = setup_sock_server.perform({'category':'apn', 'action':'set', 'name':'apn', 'user_id':'user', 'password':'password'})
