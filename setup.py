@@ -3,8 +3,20 @@
 import os
 import sys
 from setuptools import setup, find_packages
+from setuptools.command.test import test as TestCommand
 
 version = "0.1.0"
+
+class PyTest(TestCommand):
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+    def run_tests(self):
+        #import here, cause outside the eggs aren't loaded
+        import pytest
+        errno = pytest.main(self.test_args)
+        sys.exit(errno)
 
 if sys.argv[-1] == 'publish':
     os.system('python setup.py sdist upload')
@@ -39,7 +51,6 @@ setup(
     ),
     tests_require=['pytest-cov>=2.2.0',
                    'pytest>=2.8.2',
-                   'terminaltables>=1.2.1',
-                   'colorclass==2.0.0',
-                   'matplotlib>=1.4.3']
+                   'terminaltables>=1.2.1'],
+    cmdclass = {'test': PyTest}
 )
