@@ -11,6 +11,7 @@ import sys
 import termios
 import threading
 import time
+import glob
 
 # SerialPort class was imported from John Wiseman's https://github.com/wiseman/arduino-serial/blob/master/arduinoserial.py
 
@@ -110,6 +111,24 @@ class SerialPort(object):
 
     def write_byte(self, byte):
         os.write(self.fd, chr(byte))
+
+    def close(self):
+        try:
+            os.close(self.fd)
+        except OSError:
+            pass
+
+    @staticmethod
+    def resolve_modem_port(self):
+        for p in glob.glob("/dev/tty*"):
+            port = candy_board_amt.SerialPort(p, 115200)
+            port.write("AT\r")
+            time.sleep(0.1)
+            ret = port.read_line()
+            port.close()
+            if ret == "AT":
+                return p
+        return None
 
 class SockServer(threading.Thread):
     def __init__(self, version, apn, sock_path="/var/run/candy-board-service.sock", serial=None):
