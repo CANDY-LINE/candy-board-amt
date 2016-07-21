@@ -12,6 +12,7 @@ import termios
 import threading
 import time
 import glob
+import platform
 
 # SerialPort class was imported from John Wiseman's https://github.com/wiseman/arduino-serial/blob/master/arduinoserial.py
 
@@ -119,14 +120,21 @@ class SerialPort(object):
             pass
 
     @staticmethod
-    def resolve_modem_port(self):
+    def resolve_modem_port():
+        if platform.system() != 'Linux':
+            return None
         for p in glob.glob("/dev/tty*"):
-            port = candy_board_amt.SerialPort(p, 115200)
+            port = SerialPort(p, 115200)
             port.write("AT\r")
             time.sleep(0.1)
+            ret = port.read_line() # echo back
+            if ret is None:
+                port.close()
+                continue
+            port.read_line() # empty
+            port.read_line() # empty
             ret = port.read_line()
-            port.close()
-            if ret == "AT":
+            if ret == "OK":
                 return p
         return None
 
