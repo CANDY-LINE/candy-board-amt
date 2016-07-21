@@ -29,6 +29,12 @@ $ ./setup.py install --record files.txt
 $ cat files.txt | xargs rm -rf
 ```
 
+## Test
+
+```
+$ ./setup.py test
+```
+
 # Revision history
  * 0.1.0
    - Remove modem_auto_connect()
