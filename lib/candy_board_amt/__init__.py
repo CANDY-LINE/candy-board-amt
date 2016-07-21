@@ -123,19 +123,18 @@ class SerialPort(object):
     def resolve_modem_port():
         if platform.system() != 'Linux':
             return None
-        for p in glob.glob("/dev/tty*"):
-            port = SerialPort(p, 115200)
-            port.write("AT\r")
-            time.sleep(0.1)
-            ret = port.read_line() # echo back
-            if ret is None:
-                port.close()
-                continue
-            port.read_line() # empty
-            port.read_line() # empty
-            ret = port.read_line()
-            if ret == "OK":
-                return p
+        for t in ['/dev/ttyUSB*', '/dev/ttyACM*', '/dev/ttyAMA*']:
+            for p in glob.glob(t):
+                port = SerialPort(p, 115200)
+                port.write("AT\r")
+                time.sleep(0.1)
+                ret = port.read_line()
+                if ret is None:
+                    port.close()
+                    continue
+                ret = port.read_line()
+                if ret == "OK":
+                    return p
         return None
 
 class SockServer(threading.Thread):
