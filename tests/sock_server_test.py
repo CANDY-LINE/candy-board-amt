@@ -60,3 +60,6 @@ def test_modem_enable_ecm(setup_sock_server):
 def test_service_version(setup_sock_server):
     ret = setup_sock_server.perform({'category':'service', 'action':'version'})
     assert ret == '{"status": "OK", "result": {"version": "devel"}}'
+
+def test_resolve_modem_port(setup_sock_server):
+    candy_board_amt.SerialPort.resolve_modem_port()
