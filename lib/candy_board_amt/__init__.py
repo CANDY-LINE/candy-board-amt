@@ -328,15 +328,7 @@ class SockServer(threading.Thread):
         return json.dumps(message)
 
     def modem_enable_ecm(self, cmd):
-        status, result = self.send_at("AT@USBCHG=ECM") # modem will reboot
-        message = {
-            'status': status,
-            'result': result
-        }
-        return json.dumps(message)
-
-    def modem_auto_connect(self, cmd):
-        status, result = self.send_at("AT@AUTOCONN=1")
+        status, result = self.send_at("AT@USBCHG=ECM") # modem will reboot, @AUTOCONN=1
         message = {
             'status': status,
             'result': result
