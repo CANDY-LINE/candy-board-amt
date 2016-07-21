@@ -49,8 +49,8 @@ def test_modem_enable_ecm(setup_sock_server):
     ret = setup_sock_server.perform({'category':'modem', 'action':'enable_ecm'})
     assert ret == '{"status": "OK", "result": ""}'
 
-def test_modem_auto_connect(setup_sock_server):
-    ret = setup_sock_server.perform({'category':'modem', 'action':'auto_connect'})
+def test_modem_enable_ecm(setup_sock_server):
+    ret = setup_sock_server.perform({'category':'modem', 'action':'enable_acm'})
     assert ret == '{"status": "OK", "result": ""}'
 
 def test_service_version(setup_sock_server):
