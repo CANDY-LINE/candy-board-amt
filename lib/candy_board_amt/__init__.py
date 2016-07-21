@@ -335,6 +335,14 @@ class SockServer(threading.Thread):
         }
         return json.dumps(message)
 
+    def modem_enable_acm(self, cmd):
+        status, result = self.send_at("AT@USBCHG=ACM") # modem will reboot, @AUTOCONN=0
+        message = {
+            'status': status,
+            'result': result
+        }
+        return json.dumps(message)
+
     def service_version(self, cmd):
         message = {
             'status': 'OK',
