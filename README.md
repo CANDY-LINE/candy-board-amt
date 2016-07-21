@@ -36,6 +36,10 @@ $ ./setup.py test
 ```
 
 # Revision history
+
+ * 0.1.1
+   - Fix resolve_modem_port()
+
  * 0.1.0
    - Remove modem_auto_connect()
    - Add a new function to enable ACM, modem_enable_acm()
