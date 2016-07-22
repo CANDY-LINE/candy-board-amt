@@ -5,7 +5,7 @@ import sys
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
-version = "0.1.2"
+version = "0.1.3"
 
 class PyTest(TestCommand):
     def finalize_options(self):
