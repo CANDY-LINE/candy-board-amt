@@ -1,6 +1,7 @@
 # candy-board-amt
 
 [![GitHub release](https://img.shields.io/github/release/CANDY-LINE/candy-board-amt.svg)](https://github.com/CANDY-LINE/candy-board-amt/releases/latest)
+[![Build Status](https://travis-ci.org/CANDY-LINE/candy-board-amt.svg?branch=master)](https://travis-ci.org/CANDY-LINE/candy-board-amt)
 [![License BSD3](https://img.shields.io/github/license/CANDY-LINE/candy-board-amt.svg)](http://opensource.org/licenses/BSD-3-Clause)
 
 Base CANDY LINE boards service for AM Telecom Modules
