@@ -132,9 +132,12 @@ class SerialPort(object):
                 if ret is None:
                     port.close()
                     continue
-                ret = port.read_line()
-                if ret == "OK":
-                    return p
+                while ret is not None:
+                    ret = port.read_line()
+                    if ret == "OK":
+                        port.close()
+                        return p
+
         return None
 
 class SockServer(threading.Thread):

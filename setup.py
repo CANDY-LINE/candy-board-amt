@@ -5,7 +5,7 @@ import sys
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
-version = "0.1.2"
+version = "0.1.3"
 
 class PyTest(TestCommand):
     def finalize_options(self):
@@ -50,7 +50,7 @@ setup(
         'CANDY EGG', 'CANDY LINE'
     ),
     tests_require=['pytest-cov>=2.2.0',
-                   'pytest>=2.8.2',
+                   'pytest>=2.6.4',
                    'terminaltables>=1.2.1'],
     cmdclass = {'test': PyTest}
 )
