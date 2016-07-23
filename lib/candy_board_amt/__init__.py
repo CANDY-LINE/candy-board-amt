@@ -401,11 +401,22 @@ class SockServer(threading.Thread):
 
     def modem_reset(self, cmd):
         """
-        - Change USB mode to ACM
         - Remove all APN
+        - Change USB mode to ACM
         """
-        modem_enable_acm_ret = self._modem_enable_acm()
-        modem_enable_acm_ret = self._modem_enable_acm()
+        apn_ls_ret = self._apn_ls()
+        status = apn_ls_ret['status']
+        result = ''
+        if apn_ls_ret['status'] == "OK":
+            apns = apn_ls_ret['result']['apns']
+            for apn in apns:
+                self._apn_del(apn['apn_id'])
+            modem_enable_acm_ret = self._modem_enable_acm()
+            status = modem_enable_acm_ret['status']
+        message = {
+            'status': status,
+            'result': result
+        }
         return json.dumps(message)
 
     def service_version(self, cmd):
