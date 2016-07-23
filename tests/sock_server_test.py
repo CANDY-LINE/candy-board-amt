@@ -17,6 +17,10 @@ def test_perform_nok(setup_sock_server):
     ret = setup_sock_server.perform({'category':'no-such-category', 'action':'no-such-action'})
     assert ret == '{"status": "ERROR", "result": "Unknown Command"}'
 
+def test_perform_nok(setup_sock_server):
+    ret = setup_sock_server.perform({'category':'_apn', 'action':'ls'})
+    assert ret == '{"status": "ERROR", "result": "Unknown Command"}'
+
 def test_perform_nok2(setup_sock_server):
     ret = setup_sock_server.perform({})
     assert ret == '{"status": "ERROR", "result": "Invalid Args"}'

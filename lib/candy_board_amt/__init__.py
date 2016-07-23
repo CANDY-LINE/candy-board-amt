@@ -201,6 +201,8 @@ class SockServer(threading.Thread):
 
     def perform(self, cmd):
         try:
+            if cmd['category'][0] == '_':
+                raise AttributeError()
             m = getattr(self.__class__, "%s_%s" % (cmd['category'], cmd['action']))
             return m(self, cmd)
         except AttributeError:
