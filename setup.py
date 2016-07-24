@@ -2,6 +2,7 @@
 
 import os
 import sys
+import pypandoc
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
@@ -31,13 +32,13 @@ setup(
     url='http://github.com/CANDY-LINE/candy-board-amt',
     download_url='https://github.com/CANDY-LINE/candy-board-amt/tarball/{0}'.format(version),
     description='Base CANDY LINE boards service for AM Telecom Modules',
-    long_description=open('README.md').read() + '\n\n' + open('LICENSE').read(),
+    long_description=pypandoc.convert('README.md', 'rst'),
     packages=find_packages('lib'),
     package_dir={'': 'lib'},
     license='BSD3',
     classifiers=[
         'Programming Language :: Python',
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Natural Language :: English',
         'Environment :: Console',
         'Intended Audience :: System Administrators',
