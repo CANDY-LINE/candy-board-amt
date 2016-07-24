@@ -226,8 +226,6 @@ class SockServer(threading.Thread):
         self.serial.write(line)
         time.sleep(0.1)
         self.read_line() # echo back
-        self.read_line() # empty line
-        self.read_line() # empty line
         result = ""
         status = None
         while not status:
