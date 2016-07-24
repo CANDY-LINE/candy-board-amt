@@ -201,6 +201,8 @@ class SockServer(threading.Thread):
 
     def perform(self, cmd):
         try:
+            if cmd['category'][0] == '_':
+                raise AttributeError()
             m = getattr(self.__class__, "%s_%s" % (cmd['category'], cmd['action']))
             return m(self, cmd)
         except AttributeError:
@@ -224,8 +226,6 @@ class SockServer(threading.Thread):
         self.serial.write(line)
         time.sleep(0.1)
         self.read_line() # echo back
-        self.read_line() # empty line
-        self.read_line() # empty line
         result = ""
         status = None
         while not status:
@@ -240,7 +240,7 @@ class SockServer(threading.Thread):
             print("cmd:[%s] => status:[%s], result:[%s]" % (cmd, status, result))
         return (status, result.strip())
 
-    def apn_ls(self, cmd):
+    def _apn_ls(self):
         status, result = self.send_at("AT+CGDCONT?")
         apn_list = []
         if status == "OK":
@@ -266,7 +266,10 @@ class SockServer(threading.Thread):
                 'apns': apn_list
             }
         }
-        return json.dumps(message)
+        return message
+
+    def apn_ls(self, cmd):
+        return json.dumps(self._apn_ls())
 
     def apn_set(self, cmd):
         (name, user_id, password) = (cmd['name'], cmd['user_id'], cmd['password'])
@@ -282,16 +285,19 @@ class SockServer(threading.Thread):
         }
         return json.dumps(message)
 
-    def apn_del(self, cmd):
-        apn_id = "1"
-        if 'apn_id' in cmd:
-            apn_id = cmd['apn_id']
+    def _apn_del(self, apn_id):
         status, result = self.send_at("AT+CGDCONT=%s" % apn_id) # removes QCPDPP as well
         message = {
             'status': status,
             'result': result
         }
-        return json.dumps(message)
+        return message
+
+    def apn_del(self, cmd):
+        apn_id = "1"
+        if 'apn_id' in cmd:
+            apn_id = cmd['apn_id']
+        return json.dumps(self._apn_del(apn_id))
 
     def network_show(self, cmd):
         status, result = self.send_at("AT+CSQ")
@@ -380,8 +386,31 @@ class SockServer(threading.Thread):
         }
         return json.dumps(message)
 
-    def modem_enable_acm(self, cmd):
+    def _modem_enable_acm(self):
         status, result = self.send_at("AT@USBCHG=ACM") # modem will reboot, @AUTOCONN=0
+        message = {
+            'status': status,
+            'result': result
+        }
+        return message
+
+    def modem_enable_acm(self, cmd):
+        return json.dumps(self._modem_enable_acm())
+
+    def modem_reset(self, cmd):
+        """
+        - Remove all APN
+        - Change USB mode to ACM
+        """
+        apn_ls_ret = self._apn_ls()
+        status = apn_ls_ret['status']
+        result = ''
+        if apn_ls_ret['status'] == "OK":
+            apns = apn_ls_ret['result']['apns']
+            for apn in apns:
+                self._apn_del(apn['apn_id'])
+            modem_enable_acm_ret = self._modem_enable_acm()
+            status = modem_enable_acm_ret['status']
         message = {
             'status': status,
             'result': result
