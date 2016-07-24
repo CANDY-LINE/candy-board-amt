@@ -225,12 +225,15 @@ class SockServer(threading.Thread):
             print("[modem:OUT] => [%s]" % line)
         self.serial.write(line)
         time.sleep(0.1)
-        self.read_line() # echo back
         result = ""
         status = None
-        while not status:
+        while True:
             line = self.read_line()
-            if line == "OK" or line == "ERROR":
+            if line is None:
+                break
+            elif line == cmd:
+                continue
+            elif line == "OK" or line == "ERROR":
                 status = line
             elif line is None:
                 status = "UNKNOWN"
