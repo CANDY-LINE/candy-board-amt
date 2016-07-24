@@ -2,11 +2,16 @@
 
 import os
 import sys
-import pypandoc
 from setuptools import setup, find_packages
 from setuptools.command.test import test as TestCommand
 
 version = "1.0.0"
+
+try:
+    import pypandoc
+    readme_txt = pypandoc.convert('README.md', 'rst')
+except (IOError, ImportError):
+    readme_txt = ""
 
 class PyTest(TestCommand):
     def finalize_options(self):
@@ -32,7 +37,7 @@ setup(
     url='http://github.com/CANDY-LINE/candy-board-amt',
     download_url='https://github.com/CANDY-LINE/candy-board-amt/tarball/{0}'.format(version),
     description='Base CANDY LINE boards service for AM Telecom Modules',
-    long_description=pypandoc.convert('README.md', 'rst'),
+    long_description=readme_txt,
     packages=find_packages('lib'),
     package_dir={'': 'lib'},
     license='BSD3',
