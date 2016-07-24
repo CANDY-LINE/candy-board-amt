@@ -38,6 +38,9 @@ $ ./setup.py test
 
 # Revision history
 
+* 1.0.0
+   - Initial public release
+
  * 0.1.1-0.1.3
    - Fix resolve_modem_port()
 
