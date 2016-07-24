@@ -8,10 +8,12 @@ import pytest
 @pytest.fixture(scope='function')
 def setup_sock_server(request):
     serialport = SerialPortEmurator()
-    return candy_board_amt.SockServer('devel', \
+    server = candy_board_amt.SockServer('devel', \
         {'apn': 'apn', 'user': 'apn_user', 'password': 'apn_password'}, \
         '/var/run/candy-board-service.sock', \
         serialport)
+    server.debug = True
+    return server
 
 def test_perform_nok(setup_sock_server):
     ret = setup_sock_server.perform({'category':'no-such-category', 'action':'no-such-action'})
