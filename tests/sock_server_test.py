@@ -17,6 +17,10 @@ def test_perform_nok(setup_sock_server):
     ret = setup_sock_server.perform({'category':'no-such-category', 'action':'no-such-action'})
     assert ret == '{"status": "ERROR", "result": "Unknown Command"}'
 
+def test_perform_nok(setup_sock_server):
+    ret = setup_sock_server.perform({'category':'_apn', 'action':'ls'})
+    assert ret == '{"status": "ERROR", "result": "Unknown Command"}'
+
 def test_perform_nok2(setup_sock_server):
     ret = setup_sock_server.perform({})
     assert ret == '{"status": "ERROR", "result": "Invalid Args"}'
@@ -55,6 +59,10 @@ def test_modem_enable_ecm(setup_sock_server):
 
 def test_modem_enable_ecm(setup_sock_server):
     ret = setup_sock_server.perform({'category':'modem', 'action':'enable_acm'})
+    assert ret == '{"status": "OK", "result": ""}'
+
+def test_modem_reset(setup_sock_server):
+    ret = setup_sock_server.perform({'category':'modem', 'action':'reset'})
     assert ret == '{"status": "OK", "result": ""}'
 
 def test_service_version(setup_sock_server):
