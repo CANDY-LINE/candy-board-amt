@@ -209,6 +209,8 @@ class SockServer(threading.Thread):
             return self.error_message("Unknown Command")
         except KeyError:
             return self.error_message("Invalid Args")
+        except OSError:
+            return self.error_message("I/O Error")
 
     def error_message(self, msg):
         return json.dumps({"status":"ERROR","result":msg})
