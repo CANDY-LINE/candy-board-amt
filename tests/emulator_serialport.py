@@ -82,6 +82,15 @@ class SerialPortEmurator:
         "OK",
         ""
       ],
+      'AT@AUTOCONN?': [
+        "AT@AUTOCONN?",
+        "",
+        "",
+        "@AUTOCONN:0",
+        "",
+        "OK",
+        ""
+      ],
       'AT+CSQ': [
         "AT+CSQ",
         "",
