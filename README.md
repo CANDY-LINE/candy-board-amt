@@ -52,21 +52,24 @@ $ ./setup.py test
 
 # Revision history
 
- * 1.0.1
+* 1.1.0
+    - Add a new modem command to enable auto-connect mode
+
+* 1.0.1
     - Fix an issue where echo back line can be included into the result string
     - Fix an issue where CI test was failure because of unnecessary dependency on pypandoc
 
- * 1.0.0
+* 1.0.0
     - Initial public release
 
- * 0.1.1-0.1.3
+* 0.1.1-0.1.3
     - Fix resolve_modem_port()
 
- * 0.1.0
+* 0.1.0
     - Remove modem_auto_connect()
     - Add a new function to enable ACM, modem_enable_acm()
     - Add a new function delete APN, apn_del()
     - Add a new static function to resolve modem serial port
 
- * 0.0.1
+* 0.0.1
     - Initial beta release
