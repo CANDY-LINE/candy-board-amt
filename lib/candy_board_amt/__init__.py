@@ -209,6 +209,8 @@ class SockServer(threading.Thread):
             return self.error_message("Unknown Command")
         except KeyError:
             return self.error_message("Invalid Args")
+        except OSError:
+            return self.error_message("I/O Error")
 
     def error_message(self, msg):
         return json.dumps({"status":"ERROR","result":msg})
@@ -381,8 +383,21 @@ class SockServer(threading.Thread):
         }
         return json.dumps(message)
 
+    def modem_enable_auto_connect(self, cmd):
+        status, result = self.send_at("AT@AUTOCONN?")
+        if status == "OK":
+            if result == "@AUTOCONN:0":
+                status, result = self.send_at("AT@AUTOCONN=1") # modem will reboot
+            else:
+                result = "Already Enabled"
+        message = {
+            'status': status,
+            'result': result
+        }
+        return json.dumps(message)
+
     def modem_enable_ecm(self, cmd):
-        status, result = self.send_at("AT@USBCHG=ECM") # modem will reboot, @AUTOCONN=1
+        status, result = self.send_at("AT@USBCHG=ECM") # modem will reboot, @AUTOCONN=0
         message = {
             'status': status,
             'result': result
