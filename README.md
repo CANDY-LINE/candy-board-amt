@@ -52,6 +52,9 @@ $ ./setup.py test
 
 # Revision history
 
+* 1.1.1
+    - Fix an issue where the running thread stops on exception thrown
+
 * 1.1.0
     - Add a new modem command to enable auto-connect mode
 
