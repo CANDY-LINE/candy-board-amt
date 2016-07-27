@@ -13,6 +13,7 @@ import threading
 import time
 import glob
 import platform
+import traceback
 
 # SerialPort class was imported from John Wiseman's https://github.com/wiseman/arduino-serial/blob/master/arduinoserial.py
 
@@ -194,6 +195,10 @@ class SockServer(threading.Thread):
                     packer_body = struct.Struct("%is" % size)
                     packed_message = packer_body.pack(message)
                     connection.sendall(packed_message)
+
+            except:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                traceback.print_exception(exc_type, exc_value, exc_traceback)
 
             finally:
                 if 'connection' in locals():
