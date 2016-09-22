@@ -51,6 +51,9 @@ $ ./setup.py test
 ```
 
 # Revision history
+* 1.2.0
+    - Improve serial port resolver function
+    - Add a new feature to ensure the opened port is online on creating a new serial port object
 
 * 1.1.1
     - Fix an issue where the running thread stops on exception thrown

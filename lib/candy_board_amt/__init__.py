@@ -15,7 +15,8 @@ import glob
 import platform
 import traceback
 
-# SerialPort class was imported from John Wiseman's https://github.com/wiseman/arduino-serial/blob/master/arduinoserial.py
+# SerialPort class was imported from John Wiseman's
+# https://github.com/wiseman/arduino-serial/blob/master/arduinoserial.py
 
 # Map from the numbers to the termios constants (which are pretty much
 # the same numbers).
@@ -50,6 +51,8 @@ def bps_to_termios_sym(bps):
 # server = candy_board_amt.SockServer("/var/run/candy-iot.sock", serial)
 # server.debug = True
 # server.apn_ls()
+
+
 class SerialPort(object):
 
     def __init__(self, serialport, bps):
@@ -79,14 +82,17 @@ class SerialPort(object):
         attrs[IFLAG] &= ~(termios.IXON | termios.IXOFF | termios.IXANY)
 
         # Make raw.
-        attrs[LFLAG] &= ~(termios.ICANON | termios.ECHO | termios.ECHOE | termios.ISIG)
+        attrs[LFLAG] &= ~(termios.ICANON | termios.ECHO |
+                          termios.ECHOE | termios.ISIG)
         attrs[OFLAG] &= ~termios.OPOST
 
         # It's complicated--See
         # http://unixwiz.net/techtips/termios-vmin-vtime.html
-        attrs[CC][termios.VMIN] = 0;
-        attrs[CC][termios.VTIME] = 20;
+        attrs[CC][termios.VMIN] = 0
+        attrs[CC][termios.VTIME] = 20
         termios.tcsetattr(self.fd, termios.TCSANOW, attrs)
+
+        self.ping()
 
     def read_until(self, until):
         buf = ""
@@ -120,29 +126,65 @@ class SerialPort(object):
         except OSError:
             pass
 
+    def ping(self, loop=3):
+        ret = None
+        for i in (0, loop):
+            self.write("AT\r")
+            time.sleep(0.1)
+            line = self.read_line()
+            if line is None:
+                time.sleep(0.1)
+                continue
+            else:
+                ret = ''
+                while line is not None:
+                    ret = ret + line + '\r'
+                    line = self.read_line()
+                break
+        return ret
+
     @staticmethod
-    def resolve_modem_port():
+    def resolve_modem_port(bps=115200):
         if platform.system() != 'Linux':
             return None
+
+        def open_serial_port(p):
+            for i in (0, 3):
+                port = None
+                try:
+                    port = SerialPort(p, bps)
+                    return port
+                except:
+                    if port:
+                        try:
+                            port.close()
+                        except:
+                            pass
+                    port = None
+                    time.sleep(0.1)
+                    pass
+            return None
+
         for t in ['/dev/ttyUSB*', '/dev/ttyACM*', '/dev/ttyAMA*']:
-            for p in glob.glob(t):
-                port = SerialPort(p, 115200)
-                port.write("AT\r")
-                time.sleep(0.1)
-                ret = port.read_line()
+            for p in sorted(glob.glob(t)):
+                port = open_serial_port(p)
+                if port is None:
+                    continue
+                ret = port.ping()
                 if ret is None:
                     port.close()
                     continue
-                while ret is not None:
-                    ret = port.read_line()
-                    if ret == "OK":
-                        port.close()
-                        return p
+                if "OK" in ret:
+                    port.close()
+                    return p
+                port.close()
 
         return None
 
+
 class SockServer(threading.Thread):
-    def __init__(self, version, apn, sock_path="/var/run/candy-board-service.sock", serial=None):
+    def __init__(self, version, apn,
+                 sock_path="/var/run/candy-board-service.sock", serial=None):
         super(SockServer, self).__init__()
         self.version = version
         self.sock_path = sock_path
@@ -208,7 +250,8 @@ class SockServer(threading.Thread):
         try:
             if cmd['category'][0] == '_':
                 raise AttributeError()
-            m = getattr(self.__class__, "%s_%s" % (cmd['category'], cmd['action']))
+            m = getattr(self.__class__,
+                        "%s_%s" % (cmd['category'], cmd['action']))
             return m(self, cmd)
         except AttributeError:
             return self.error_message("Unknown Command")
@@ -218,7 +261,7 @@ class SockServer(threading.Thread):
             return self.error_message("I/O Error")
 
     def error_message(self, msg):
-        return json.dumps({"status":"ERROR","result":msg})
+        return json.dumps({"status": "ERROR", "result": msg})
 
     def read_line(self):
         line = self.serial.read_line()
@@ -247,20 +290,24 @@ class SockServer(threading.Thread):
             elif line.strip() != "":
                 result += line + "\n"
         if self.debug:
-            print("cmd:[%s] => status:[%s], result:[%s]" % (cmd, status, result))
+            print("cmd:[%s] => status:[%s], result:[%s]" %
+                  (cmd, status, result))
         return (status, result.strip())
 
     def _apn_ls(self):
         status, result = self.send_at("AT+CGDCONT?")
         apn_list = []
         if status == "OK":
-            id_name_list = map(lambda e: e[10:].split(",")[0] + "," + e[10:].split(",")[2].translate(None, '"'), result.split("\n"))
+            id_name_list = map(lambda e: e[10:].split(",")[0] + "," +
+                               e[10:].split(",")[2].translate(None, '"'),
+                               result.split("\n"))
             status, result = self.send_at("AT$QCPDPP?")
             creds_list = []
             if status == "OK":
                 creds_list = map(lambda e: e[2].translate(None, '"'),
-                    filter(lambda e: len(e) > 2,
-                        map(lambda e: e[9:].split(","), result.split("\n"))))
+                                 filter(lambda e: len(e) > 2,
+                                        map(lambda e: e[9:].split(","),
+                                            result.split("\n"))))
             for i in range(len(id_name_list)):
                 id_name = id_name_list[i].split(",")
                 apn = {
@@ -282,13 +329,16 @@ class SockServer(threading.Thread):
         return json.dumps(self._apn_ls())
 
     def apn_set(self, cmd):
-        (name, user_id, password) = (cmd['name'], cmd['user_id'], cmd['password'])
+        (name, user_id, password) = (cmd['name'], cmd['user_id'],
+                                     cmd['password'])
         apn_id = "1"
         if 'apn_id' in cmd:
             apn_id = cmd['apn_id']
-        status, result = self.send_at("AT+CGDCONT=%s,\"IPV4V6\",\"%s\",\"0.0.0.0\",0,0" % (apn_id, name))
+        status, result = self.send_at(("AT+CGDCONT=%s,\"IPV4V6\",\"%s\"," +
+                                      "\"0.0.0.0\",0,0") % (apn_id, name))
         if status == "OK":
-            status, result = self.send_at("AT$QCPDPP=%s,3,\"%s\",\"%s\"" % (apn_id, password, user_id))
+            status, result = self.send_at(("AT$QCPDPP=%s,3,\"%s\",\"%s\"") %
+                                          (apn_id, password, user_id))
         message = {
             'status': status,
             'result': result
@@ -296,7 +346,8 @@ class SockServer(threading.Thread):
         return json.dumps(message)
 
     def _apn_del(self, apn_id):
-        status, result = self.send_at("AT+CGDCONT=%s" % apn_id) # removes QCPDPP as well
+        # removes QCPDPP as well
+        status, result = self.send_at(("AT+CGDCONT=%s") % apn_id)
         message = {
             'status': status,
             'result': result
@@ -392,7 +443,8 @@ class SockServer(threading.Thread):
         status, result = self.send_at("AT@AUTOCONN?")
         if status == "OK":
             if result == "@AUTOCONN:0":
-                status, result = self.send_at("AT@AUTOCONN=1") # modem will reboot
+                # modem will reboot
+                status, result = self.send_at("AT@AUTOCONN=1")
             else:
                 result = "Already Enabled"
         message = {
@@ -402,7 +454,8 @@ class SockServer(threading.Thread):
         return json.dumps(message)
 
     def modem_enable_ecm(self, cmd):
-        status, result = self.send_at("AT@USBCHG=ECM") # modem will reboot, @AUTOCONN=0
+        # modem will reboot, @AUTOCONN=0
+        status, result = self.send_at("AT@USBCHG=ECM")
         message = {
             'status': status,
             'result': result
@@ -410,7 +463,8 @@ class SockServer(threading.Thread):
         return json.dumps(message)
 
     def _modem_enable_acm(self):
-        status, result = self.send_at("AT@USBCHG=ACM") # modem will reboot, @AUTOCONN=0
+        # modem will reboot, @AUTOCONN=0
+        status, result = self.send_at("AT@USBCHG=ACM")
         message = {
             'status': status,
             'result': result
