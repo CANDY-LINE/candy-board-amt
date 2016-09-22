@@ -334,10 +334,10 @@ class SockServer(threading.Thread):
         apn_id = "1"
         if 'apn_id' in cmd:
             apn_id = cmd['apn_id']
-        status, result = self.send_at("AT+CGDCONT=%s,\"IPV4V6\",\"%s\"," +
-                                      "\"0.0.0.0\",0,0" % (apn_id, name))
+        status, result = self.send_at(("AT+CGDCONT=%s,\"IPV4V6\",\"%s\"," +
+                                      "\"0.0.0.0\",0,0") % (apn_id, name))
         if status == "OK":
-            status, result = self.send_at("AT$QCPDPP=%s,3,\"%s\",\"%s\"" %
+            status, result = self.send_at(("AT$QCPDPP=%s,3,\"%s\",\"%s\"") %
                                           (apn_id, password, user_id))
         message = {
             'status': status,
@@ -347,7 +347,7 @@ class SockServer(threading.Thread):
 
     def _apn_del(self, apn_id):
         # removes QCPDPP as well
-        status, result = self.send_at("AT+CGDCONT=%s" % apn_id)
+        status, result = self.send_at(("AT+CGDCONT=%s") % apn_id)
         message = {
             'status': status,
             'result': result
