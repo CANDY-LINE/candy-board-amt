@@ -128,34 +128,51 @@ class SerialPort(object):
     def resolve_modem_port():
         if platform.system() != 'Linux':
             return None
-        for t in ['/dev/ttyUSB*', '/dev/ttyACM*', '/dev/ttyAMA*']:
-            for p in glob.glob(t):
-                for t in (0, 3):
-                    try:
-                        port = SerialPort(p, 115200)
-                        port.write("AT\r")
-                        time.sleep(0.1)
-                        break
-                    except:
-                        if port:
-                            try:
-                                port.close()
-                            except:
-                                pass
-                        port = None
-                        time.sleep(0.5)
-                        pass
-                if port is None:
-                    continue
+
+        def open_serial_port(p):
+            for i in (0, 3):
+                port = None
+                try:
+                    port = SerialPort(p, 115200)
+                    return port
+                except:
+                    if port:
+                        try:
+                            port.close()
+                        except:
+                            pass
+                    port = None
+                    time.sleep(0.1)
+                    pass
+            return None
+
+        def ping(port):
+            for i in (0, 3):
+                port.write("AT\r")
+                time.sleep(0.1)
                 ret = port.read_line()
                 if ret is None:
-                    port.close()
+                    time.sleep(0.1)
+                    continue
+                else:
+                    return ret
+            port.close()
+            return None
+
+        for t in ['/dev/ttyUSB*', '/dev/ttyACM*', '/dev/ttyAMA*']:
+            for p in glob.glob(t):
+                port = open_serial_port(p)
+                if port is None:
+                    continue
+                ret = ping(port)
+                if ret is None:
                     continue
                 while ret is not None:
                     ret = port.read_line()
                     if ret == "OK":
                         port.close()
                         return p
+                port.close()
 
         return None
 
