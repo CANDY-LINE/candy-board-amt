@@ -124,6 +124,23 @@ class SerialPort(object):
         except OSError:
             pass
 
+    def ping(self, loop=3):
+        ret = None
+        for i in (0, loop):
+            self.write("AT\r")
+            time.sleep(0.1)
+            line = self.read_line()
+            if line is None:
+                time.sleep(0.1)
+                continue
+            else:
+                ret = ''
+                while line is not None:
+                    ret = ret + line + '\r'
+                    line = self.read_line()
+                break
+        return ret
+
     @staticmethod
     def resolve_modem_port():
         if platform.system() != 'Linux':
@@ -146,32 +163,18 @@ class SerialPort(object):
                     pass
             return None
 
-        def ping(port):
-            for i in (0, 3):
-                port.write("AT\r")
-                time.sleep(0.1)
-                ret = port.read_line()
-                if ret is None:
-                    time.sleep(0.1)
-                    continue
-                else:
-                    return ret
-            port.close()
-            return None
-
         for t in ['/dev/ttyUSB*', '/dev/ttyACM*', '/dev/ttyAMA*']:
             for p in glob.glob(t):
                 port = open_serial_port(p)
                 if port is None:
                     continue
-                ret = ping(port)
+                ret = port.ping()
                 if ret is None:
+                    port.close()
                     continue
-                while ret is not None:
-                    ret = port.read_line()
-                    if ret == "OK":
-                        port.close()
-                        return p
+                if "OK" in ret:
+                    port.close()
+                    return p
                 port.close()
 
         return None
