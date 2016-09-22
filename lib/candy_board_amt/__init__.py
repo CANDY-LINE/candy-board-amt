@@ -144,7 +144,7 @@ class SerialPort(object):
         return ret
 
     @staticmethod
-    def resolve_modem_port():
+    def resolve_modem_port(bps=115200):
         if platform.system() != 'Linux':
             return None
 
@@ -152,7 +152,7 @@ class SerialPort(object):
             for i in (0, 3):
                 port = None
                 try:
-                    port = SerialPort(p, 115200)
+                    port = SerialPort(p, bps)
                     return port
                 except:
                     if port:
