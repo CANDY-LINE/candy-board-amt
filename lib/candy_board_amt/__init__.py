@@ -92,6 +92,8 @@ class SerialPort(object):
         attrs[CC][termios.VTIME] = 20
         termios.tcsetattr(self.fd, termios.TCSANOW, attrs)
 
+        self.ping()
+
     def read_until(self, until):
         buf = ""
         done = False
