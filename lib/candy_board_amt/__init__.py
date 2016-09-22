@@ -126,9 +126,23 @@ class SerialPort(object):
             return None
         for t in ['/dev/ttyUSB*', '/dev/ttyACM*', '/dev/ttyAMA*']:
             for p in glob.glob(t):
-                port = SerialPort(p, 115200)
-                port.write("AT\r")
-                time.sleep(0.1)
+                for t in (0, 3):
+                    try:
+                        port = SerialPort(p, 115200)
+                        port.write("AT\r")
+                        time.sleep(0.1)
+                        break
+                    except:
+                        if port:
+                            try:
+                                port.close()
+                            except:
+                                pass
+                        port = None
+                        time.sleep(0.5)
+                        pass
+                if port is None:
+                    continue
                 ret = port.read_line()
                 if ret is None:
                     port.close()
