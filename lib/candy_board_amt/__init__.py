@@ -259,6 +259,12 @@ class SockServer(threading.Thread):
             return self.error_message("Invalid Args")
         except OSError:
             return self.error_message("I/O Error")
+        except:
+            return self.error_message("Unexpected error: %s" %
+                                      (''.join(traceback
+                                       .format_exception(*sys.exc_info())[-2:])
+                                       .strip().replace('\n', ': '))
+                                      )
 
     def error_message(self, msg):
         return json.dumps({"status": "ERROR", "result": msg})
