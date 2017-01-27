@@ -215,7 +215,6 @@ class SockServer(threading.Thread):
         while True:
             try:
                 connection, client_address = self.sock.accept()
-                print("Accepted from [%s]" % client_address)
                 connection.setblocking(0)
 
                 # request
